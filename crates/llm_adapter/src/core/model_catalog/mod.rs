@@ -3,6 +3,7 @@ mod deepseek;
 mod gemini;
 mod helpers;
 mod kimi;
+mod mistral;
 mod openai;
 mod opencode;
 mod other;
@@ -13,6 +14,7 @@ use self::{
   gemini::gemini_variants,
   helpers::{ModelRegistryVariantContract, attachment},
   kimi::kimi_variants,
+  mistral::mistral_variants,
   openai::openai_variants,
   opencode::{opencode_go_variants, opencode_zen_variants},
   other::{cloudflare_variants, fal_variants, morph_variants, perplexity_variants},
@@ -38,5 +40,6 @@ pub(crate) fn registry_variants() -> Vec<ModelRegistryVariantContract> {
   variants.extend(kimi_variants());
   variants.extend(opencode_go_variants());
   variants.extend(opencode_zen_variants());
+  variants.extend(mistral_variants(&image_attachment));
   variants
 }

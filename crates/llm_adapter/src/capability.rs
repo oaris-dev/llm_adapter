@@ -279,6 +279,11 @@ fn canonical_provider_default_backend(provider: &str) -> Option<&'static str> {
     "geminiVertex" => Some("gemini_vertex"),
     "cloudflareWorkersAi" => Some("cloudflare_workers_ai"),
     "fal" => Some("fal"),
+    // Oaris: Mistral speaks the OpenAI chat dialect, matching the backend_kind
+    // our model_catalog/mistral.rs variants declare. Without this arm the
+    // capability lookup returns None and a managed Mistral provider profile is
+    // rejected with "managed copilot profile model is unsupported".
+    "mistral" => Some("openai_chat"),
     _ => None,
   }
 }

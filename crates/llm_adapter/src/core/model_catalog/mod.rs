@@ -1,6 +1,7 @@
 mod anthropic;
 mod gemini;
 mod helpers;
+mod mistral;
 mod openai;
 mod other;
 
@@ -8,6 +9,7 @@ use self::{
   anthropic::anthropic_variants,
   gemini::gemini_variants,
   helpers::{ModelRegistryVariantContract, attachment},
+  mistral::mistral_variants,
   openai::openai_variants,
   other::{cloudflare_variants, fal_variants, morph_variants, perplexity_variants},
 };
@@ -28,5 +30,6 @@ pub(crate) fn registry_variants() -> Vec<ModelRegistryVariantContract> {
   variants.extend(perplexity_variants());
   variants.extend(anthropic_variants(&image_attachment));
   variants.extend(morph_variants());
+  variants.extend(mistral_variants(&image_attachment));
   variants
 }

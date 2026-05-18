@@ -158,38 +158,39 @@ fn tool_definition_from_core_for_responses(tool: &CoreToolDefinition) -> Value {
 }
 
 fn to_openai_chat_image_source(source: &Value) -> Value {
+  // Only keep fields accepted by the OpenAI chat completions API:
+  // "url" (required) and "detail" (optional).
+  // Providers like Mistral reject extra fields such as "media_type" with 422.
   match source {
     Value::String(url) => json!({ "url": url }),
     Value::Object(object) => {
       if object.contains_key("url") {
-        return Value::Object(object.clone());
+        let mut filtered = Map::new();
+        filtered.insert("url".to_string(), object["url"].clone());
+        if let Some(detail) = object.get("detail") {
+          filtered.insert("detail".to_string(), detail.clone());
+        }
+        return Value::Object(filtered);
       }
       if let Some(image_url) = object.get("image_url") {
-        let mut normalized = Map::new();
+        let mut filtered = Map::new();
         match image_url {
           Value::String(url) => {
-            normalized.insert("url".to_string(), Value::String(url.clone()));
+            filtered.insert("url".to_string(), Value::String(url.clone()));
           }
           Value::Object(image_object) => {
             if let Some(url) = image_object.get("url") {
-              normalized.insert("url".to_string(), url.clone());
+              filtered.insert("url".to_string(), url.clone());
             }
-            for (key, value) in image_object {
-              if key != "url" {
-                normalized.insert(key.clone(), value.clone());
-              }
+            if let Some(detail) = image_object.get("detail") {
+              filtered.insert("detail".to_string(), detail.clone());
             }
           }
           _ => {
-            normalized.insert("url".to_string(), image_url.clone());
+            filtered.insert("url".to_string(), image_url.clone());
           }
         }
-        for (key, value) in object {
-          if key != "image_url" && key != "type" {
-            normalized.insert(key.clone(), value.clone());
-          }
-        }
-        return Value::Object(normalized);
+        return Value::Object(filtered);
       }
       Value::Object(object.clone())
     }

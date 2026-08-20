@@ -214,9 +214,14 @@ pub fn provider_default_capability_upper_bound(provider: &str, model_id: &str) -
           })
           .collect::<Vec<_>>();
         let mut features = Vec::new();
+        // Oaris: "mistral" added. Mistral's chat completions API supports tool
+        // calling, and without it the router drops every Mistral target whenever
+        // a request carries tools -- which AFFiNE chat always does
+        // (searchWorkspace / readingDocs) -- surfacing as
+        // managed_preset_unavailable rather than anything mentioning tools.
         if matches!(
           provider,
-          "openai" | "anthropic" | "anthropicVertex" | "gemini" | "geminiVertex" | "cloudflareWorkersAi"
+          "openai" | "anthropic" | "anthropicVertex" | "gemini" | "geminiVertex" | "cloudflareWorkersAi" | "mistral"
         ) && output
           .iter()
           .any(|value| matches!(value, ModelOutput::Text | ModelOutput::Object | ModelOutput::Structured))

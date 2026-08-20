@@ -41,3 +41,19 @@ fn mistral_chat_models_declare_structured_output() {
         );
     }
 }
+
+#[test]
+fn mistral_chat_models_declare_tool_calling() {
+    // AFFiNE chat always sends tools (searchWorkspace / readingDocs), so the
+    // router adds ModelFeature::ToolCalling to the slot requirements. Without it
+    // every Mistral target is filtered out.
+    use llm_adapter::capability::ModelFeature;
+    for model in ["mistral-large-latest", "mistral-medium-latest", "mistral-small-latest", "codestral-latest"] {
+        let caps = provider_default_capability_upper_bound("mistral", model)
+            .unwrap_or_else(|| panic!("no capabilities for {model}"));
+        assert!(
+            caps.iter().any(|c| c.features.contains(&ModelFeature::ToolCalling)),
+            "{model} must declare ToolCalling"
+        );
+    }
+}
